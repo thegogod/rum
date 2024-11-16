@@ -37,6 +37,12 @@ func (self *SelectStatement) ColumnAs(column string, alias string) *SelectStatem
 	return self
 }
 
+func (self *SelectStatement) ColumnSelect(stmt *SelectStatement, alias string) *SelectStatement {
+	stmt.setDepth(self.depth + 1)
+	self.columns = append(self.columns, As(stmt, alias))
+	return self
+}
+
 func (self *SelectStatement) From(from string) *SelectStatement {
 	self.from = Raw(from)
 	return self

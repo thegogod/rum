@@ -7,6 +7,38 @@ import (
 )
 
 func TestSelect(t *testing.T) {
+	t.Run("column", func(t *testing.T) {
+		t.Run("string", func(t *testing.T) {
+			sql := sqlx.Select("a", "b", "c").Sql()
+
+			if sql != "SELECT a, b, c;" {
+				t.Fatalf(sql)
+			}
+		})
+
+		t.Run("select", func(t *testing.T) {
+			sql := sqlx.Select().ColumnSelect(
+				sqlx.Select("a", "b", "c").From("test"),
+				"results",
+			).Sql()
+
+			if sql != "SELECT (SELECT a, b, c FROM test) as \"results\";" {
+				t.Fatalf(sql)
+			}
+		})
+
+		t.Run("string and select", func(t *testing.T) {
+			sql := sqlx.Select("1", "2").ColumnSelect(
+				sqlx.Select("a", "b", "c").From("test"),
+				"results",
+			).Sql()
+
+			if sql != "SELECT 1, 2, (SELECT a, b, c FROM test) as \"results\";" {
+				t.Fatalf(sql)
+			}
+		})
+	})
+
 	t.Run("from", func(t *testing.T) {
 		t.Run("string", func(t *testing.T) {
 			sql := sqlx.Select("a", "b", "c").From("test").Sql()
@@ -64,6 +96,7 @@ func TestSelect(t *testing.T) {
 				"a", "b", "c",
 			).From("test").Where(
 				sqlx.And(
+					sqlx.Raw("c = c"),
 					sqlx.And(
 						sqlx.Raw("a = b"),
 						sqlx.Raw("b = c"),
@@ -75,7 +108,7 @@ func TestSelect(t *testing.T) {
 				),
 			).Sql()
 
-			if sql != "SELECT a, b, c FROM test WHERE (a = b AND b = c) AND (a = b OR b = c);" {
+			if sql != "SELECT a, b, c FROM test WHERE c = c AND (a = b AND b = c) AND (a = b OR b = c);" {
 				t.Fatalf(sql)
 			}
 		})
