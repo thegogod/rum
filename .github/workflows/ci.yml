@@ -15,7 +15,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
-        go: [1.22]
+        go: [1.22, 1.23]
     steps:
       - name: Setup Go
         uses: actions/setup-go@v5
@@ -34,5 +34,5 @@ jobs:
         uses: codecov/codecov-action@v4.0.1
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          slug: aacebo/assert
+          slug: thegogod/rum
           files: converage.out
