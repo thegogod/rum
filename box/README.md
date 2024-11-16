@@ -6,17 +6,12 @@ a dependency injection library
 
 ```go
 b := box.New()
+
+// put some things in the box
 b.Put(&ServiceA{}, &ServiceB{})
 
-fn, err := b.Inject(func (a *ServiceA, b *Service B) {
-	fmt.Println(a, b)
-})
-
-if err != nil {
-	panic(err)
-}
-
-fn()
+// get something out of the box
+box.Get[*ServiceA](b)
 ```
 
 # Benchmarks

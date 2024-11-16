@@ -90,7 +90,32 @@ func (self SelectStatement) Sql() string {
 }
 
 func (self SelectStatement) SqlPretty() string {
-	return strings.Join([]string{}, "\n")
+	parts := []string{"SELECT"}
+	columns := []string{}
+
+	for _, column := range self.columns {
+		columns = append(columns, column.Sql())
+	}
+
+	parts = append(parts, strings.Join(columns, ",\n"))
+
+	if self.from != nil {
+		parts = append(parts, "FROM "+self.from.Sql())
+	}
+
+	if self.where != nil {
+		parts = append(parts, "WHERE"+self.where.Sql())
+	}
+
+	sql := strings.Join(parts, "\n")
+
+	if self.depth == 0 {
+		sql += ";"
+	} else {
+		sql = fmt.Sprintf("(%s)", sql)
+	}
+
+	return sql
 }
 
 func (self *SelectStatement) setDepth(depth uint) {
