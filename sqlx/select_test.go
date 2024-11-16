@@ -113,4 +113,38 @@ func TestSelect(t *testing.T) {
 			}
 		})
 	})
+
+	t.Run("pretty", func(t *testing.T) {
+		t.Run("column", func(t *testing.T) {
+			t.Run("string", func(t *testing.T) {
+				sql := sqlx.Select("a", "b", "c").SqlPretty()
+
+				if sql != "SELECT\n\ta,\n\tb,\n\tc;" {
+					t.Fatalf(sql)
+				}
+			})
+
+			t.Run("select", func(t *testing.T) {
+				sql := sqlx.Select().ColumnSelect(
+					sqlx.Select("a", "b", "c").From("test"),
+					"results",
+				).SqlPretty()
+
+				if sql != "SELECT\n\t(SELECT a, b, c FROM test) as \"results\";" {
+					t.Fatalf(sql)
+				}
+			})
+
+			// t.Run("string and select", func(t *testing.T) {
+			// 	sql := sqlx.Select("1", "2").ColumnSelect(
+			// 		sqlx.Select("a", "b", "c").From("test"),
+			// 		"results",
+			// 	).Sql()
+
+			// 	if sql != "SELECT 1, 2, (SELECT a, b, c FROM test) as \"results\";" {
+			// 		t.Fatalf(sql)
+			// 	}
+			// })
+		})
+	})
 }

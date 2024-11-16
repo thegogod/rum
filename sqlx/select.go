@@ -94,7 +94,7 @@ func (self SelectStatement) SqlPretty() string {
 	columns := []string{}
 
 	for _, column := range self.columns {
-		columns = append(columns, column.Sql())
+		columns = append(columns, "\t"+column.Sql())
 	}
 
 	parts = append(parts, strings.Join(columns, ",\n"))
