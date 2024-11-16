@@ -2,6 +2,11 @@ clean:
 	rm -rf ./bin
 	rm coverage.out
 
+build:
+	go build -o bin/rum ./
+
+clean.build: clean build
+
 fmt:
 	gofmt -w ./
 
