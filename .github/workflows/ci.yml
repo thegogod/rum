@@ -37,3 +37,4 @@ jobs:
           files: converage.out
           fail_ci_if_error: true
           verbose: true
+          os: alpine
