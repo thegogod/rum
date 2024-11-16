@@ -5,23 +5,23 @@ import (
 	"strings"
 )
 
-type AndClause struct {
+type OrClause struct {
 	depth      uint
 	conditions []Sqlizer
 }
 
-func And(conditions ...Sqlizer) *AndClause {
-	return &AndClause{0, conditions}
+func Or(conditions ...Sqlizer) *OrClause {
+	return &OrClause{0, conditions}
 }
 
-func (self AndClause) Sql() string {
+func (self OrClause) Sql() string {
 	parts := []string{}
 
 	for _, cond := range self.conditions {
 		parts = append(parts, cond.Sql())
 	}
 
-	sql := strings.Join(parts, " AND ")
+	sql := strings.Join(parts, " OR ")
 
 	if self.depth > 0 && len(parts) > 1 {
 		sql = fmt.Sprintf("(%s)", sql)
@@ -30,14 +30,14 @@ func (self AndClause) Sql() string {
 	return sql
 }
 
-func (self AndClause) SqlPretty() string {
+func (self OrClause) SqlPretty() string {
 	parts := []string{}
 
 	for _, cond := range self.conditions {
 		parts = append(parts, cond.Sql())
 	}
 
-	sql := strings.Join(parts, "\nAND ")
+	sql := strings.Join(parts, "\nOR ")
 
 	if self.depth > 0 && len(parts) > 1 {
 		sql = fmt.Sprintf("(%s)", sql)
@@ -46,7 +46,7 @@ func (self AndClause) SqlPretty() string {
 	return sql
 }
 
-func (self *AndClause) setDepth(depth uint) {
+func (self *OrClause) setDepth(depth uint) {
 	self.depth = depth
 
 	for _, cond := range self.conditions {

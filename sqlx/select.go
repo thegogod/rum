@@ -9,6 +9,7 @@ type SelectStatement struct {
 	depth   uint
 	columns []Sqlizer
 	from    Sqlizer
+	where   Sqlizer
 }
 
 func Select(columns ...string) *SelectStatement {
@@ -22,6 +23,7 @@ func Select(columns ...string) *SelectStatement {
 		depth:   0,
 		columns: cols,
 		from:    nil,
+		where:   nil,
 	}
 }
 
@@ -46,6 +48,12 @@ func (self *SelectStatement) FromSelect(stmt *SelectStatement, alias string) *Se
 	return self
 }
 
+func (self *SelectStatement) Where(where Sqlizer) *SelectStatement {
+	where.setDepth(self.depth)
+	self.where = where
+	return self
+}
+
 func (self SelectStatement) Sql() string {
 	parts := []string{"SELECT"}
 	columns := []string{}
@@ -55,7 +63,15 @@ func (self SelectStatement) Sql() string {
 	}
 
 	parts = append(parts, strings.Join(columns, ", "))
-	parts = append(parts, "FROM", self.from.Sql())
+
+	if self.from != nil {
+		parts = append(parts, "FROM", self.from.Sql())
+	}
+
+	if self.where != nil {
+		parts = append(parts, "WHERE", self.where.Sql())
+	}
+
 	sql := strings.Join(parts, " ")
 
 	if self.depth == 0 {
@@ -69,4 +85,8 @@ func (self SelectStatement) Sql() string {
 
 func (self SelectStatement) SqlPretty() string {
 	return strings.Join([]string{}, "\n")
+}
+
+func (self *SelectStatement) setDepth(depth uint) {
+	self.depth = depth
 }
