@@ -3,7 +3,7 @@ clean:
 	rm coverage.out
 
 build:
-	go build -o bin/rum ./
+	go build ./...
 
 clean.build: clean build
 
