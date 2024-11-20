@@ -62,15 +62,20 @@ func (self WhereClause) Sql() string {
 }
 
 func (self WhereClause) SqlPretty(indent string) string {
-	parts := strings.Split(self.predicate.Sql(), "\n")
+	parts := strings.Split(self.predicate.SqlPretty(indent), "\n")
 
 	for _, condition := range self.conditions {
-		parts = append(parts, string(condition.kind)+" "+condition.value.Sql())
+		parts = append(parts, string(condition.kind)+" "+condition.value.SqlPretty(indent))
 	}
 
 	if self.depth > 0 {
+		for i := range parts {
+			parts[i] = indent + parts[i]
+		}
 
+		parts = append([]string{"("}, parts...)
+		parts = append(parts, ")")
 	}
 
-	return strings.Join(parts, " ")
+	return strings.Join(parts, "\n")
 }

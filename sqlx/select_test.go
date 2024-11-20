@@ -1,7 +1,6 @@
 package sqlx_test
 
 import (
-	"fmt"
 	"os"
 	"strings"
 	"testing"
@@ -152,8 +151,6 @@ func TestSelect(t *testing.T) {
 			).Sql()
 
 			if sql != strings.TrimSuffix(string(expected), "\n") {
-				fmt.Println(string(expected))
-				fmt.Println(sql)
 				t.Fatalf(sql)
 			}
 		})
@@ -238,8 +235,70 @@ func TestSelect(t *testing.T) {
 				).SqlPretty("    ")
 
 				if sql != strings.TrimSuffix(string(expected), "\n") {
-					fmt.Println(string(expected))
-					fmt.Println(sql)
+					t.Fatalf(sql)
+				}
+			})
+		})
+
+		t.Run("where", func(t *testing.T) {
+			t.Run("and", func(t *testing.T) {
+				expected, err := os.ReadFile("./testcases/select/where_and_pretty.sql")
+
+				if err != nil {
+					t.Fatal(err)
+				}
+
+				sql := sqlx.Select(
+					"a", "b", "c",
+				).From("test").Where(
+					"a = b",
+				).And(
+					"b = c",
+				).SqlPretty("    ")
+
+				if sql != strings.TrimSuffix(string(expected), "\n") {
+					t.Fatalf(sql)
+				}
+			})
+
+			t.Run("or", func(t *testing.T) {
+				expected, err := os.ReadFile("./testcases/select/where_or_pretty.sql")
+
+				if err != nil {
+					t.Fatal(err)
+				}
+
+				sql := sqlx.Select(
+					"a", "b", "c",
+				).From("test").Where(
+					"a = b",
+				).Or(
+					"b = c",
+				).SqlPretty("    ")
+
+				if sql != strings.TrimSuffix(string(expected), "\n") {
+					t.Fatalf(sql)
+				}
+			})
+
+			t.Run("and or", func(t *testing.T) {
+				expected, err := os.ReadFile("./testcases/select/where_and_or_pretty.sql")
+
+				if err != nil {
+					t.Fatal(err)
+				}
+
+				sql := sqlx.Select(
+					"a", "b", "c",
+				).From("test").Where(
+					"c = c",
+				).And(
+					sqlx.Where("a = b").And("b = c"),
+				).And(
+					sqlx.Where("a = b").Or("b = c"),
+				).SqlPretty("    ")
+
+				if sql != strings.TrimSuffix(string(expected), "\n") {
 					t.Fatalf(sql)
 				}
 			})
