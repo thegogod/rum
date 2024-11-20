@@ -7,9 +7,9 @@ import (
 
 type SelectStatement struct {
 	depth   uint
-	columns []Sqlizer
+	columns Columns
 	from    Sqlizer
-	where   Sqlizer
+	where   *WhereClause
 }
 
 func Select(columns ...string) *SelectStatement {
@@ -38,7 +38,7 @@ func (self *SelectStatement) ColumnAs(column string, alias string) *SelectStatem
 }
 
 func (self *SelectStatement) ColumnSelect(stmt *SelectStatement, alias string) *SelectStatement {
-	stmt.setDepth(self.depth + 1)
+	stmt.depth = self.depth + 1
 	self.columns = append(self.columns, As(stmt, alias))
 	return self
 }
@@ -54,21 +54,54 @@ func (self *SelectStatement) FromSelect(stmt *SelectStatement, alias string) *Se
 	return self
 }
 
-func (self *SelectStatement) Where(where Sqlizer) *SelectStatement {
-	where.setDepth(self.depth)
-	self.where = where
+func (self *SelectStatement) Where(predicate any) *SelectStatement {
+	switch v := predicate.(type) {
+	case string:
+		self.where = Where(Sql{v})
+	case Sqlizer:
+		self.where = Where(Sql{v})
+	}
+
+	return self
+}
+
+func (self *SelectStatement) And(predicates ...any) *SelectStatement {
+	for _, predicate := range predicates {
+		switch v := predicate.(type) {
+		case *SelectStatement:
+			v.depth = self.depth + 1
+			break
+		case *WhereClause:
+			v.depth = self.depth + 1
+			break
+		}
+
+		self.where.And(predicate)
+	}
+
+	return self
+}
+
+func (self *SelectStatement) Or(predicates ...any) *SelectStatement {
+	for _, predicate := range predicates {
+		switch v := predicate.(type) {
+		case *SelectStatement:
+			v.depth = self.depth + 1
+			break
+		case *WhereClause:
+			v.depth = self.depth + 1
+			break
+		}
+
+		self.where.Or(predicate)
+	}
+
 	return self
 }
 
 func (self SelectStatement) Sql() string {
 	parts := []string{"SELECT"}
-	columns := []string{}
-
-	for _, column := range self.columns {
-		columns = append(columns, column.Sql())
-	}
-
-	parts = append(parts, strings.Join(columns, ", "))
+	parts = append(parts, self.columns.Sql())
 
 	if self.from != nil {
 		parts = append(parts, "FROM", self.from.Sql())
@@ -89,35 +122,44 @@ func (self SelectStatement) Sql() string {
 	return sql
 }
 
-func (self SelectStatement) SqlPretty() string {
-	parts := []string{"SELECT"}
-	columns := []string{}
+func (self SelectStatement) SqlPretty(indent string) string {
+	parts := []string{}
 
-	for _, column := range self.columns {
-		columns = append(columns, "\t"+column.Sql())
+	if self.depth > 0 {
+		parts = append(parts, "(")
 	}
 
-	parts = append(parts, strings.Join(columns, ",\n"))
+	parts = append(parts, "SELECT")
+	parts = append(
+		parts,
+		strings.Split(self.columns.SqlPretty(indent), "\n")...,
+	)
 
 	if self.from != nil {
-		parts = append(parts, "FROM "+self.from.Sql())
+		lines := strings.Split(self.from.SqlPretty(indent), "\n")
+		parts = append(parts, "FROM "+lines[0])
+		parts = append(parts, lines[1:]...)
 	}
 
 	if self.where != nil {
-		parts = append(parts, "WHERE"+self.where.Sql())
+		lines := strings.Split(self.where.SqlPretty(indent), "\n")
+		parts = append(parts, "WHERE "+lines[0])
+		parts = append(parts, lines[1:]...)
+	}
+
+	if self.depth > 0 {
+		for i := 1; i < len(parts); i++ {
+			parts[i] = indent + parts[i]
+		}
+
+		parts = append(parts, ")")
 	}
 
 	sql := strings.Join(parts, "\n")
 
 	if self.depth == 0 {
 		sql += ";"
-	} else {
-		sql = fmt.Sprintf("(%s)", sql)
 	}
 
 	return sql
-}
-
-func (self *SelectStatement) setDepth(depth uint) {
-	self.depth = depth
 }

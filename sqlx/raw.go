@@ -1,22 +1,17 @@
 package sqlx
 
 type RawStatement struct {
-	depth uint
-	stmt  string
+	stmt string
 }
 
 func Raw(stmt string) *RawStatement {
-	return &RawStatement{0, stmt}
+	return &RawStatement{stmt}
 }
 
 func (self RawStatement) Sql() string {
 	return self.stmt
 }
 
-func (self RawStatement) SqlPretty() string {
+func (self RawStatement) SqlPretty(indent string) string {
 	return self.stmt
-}
-
-func (self *RawStatement) setDepth(depth uint) {
-	self.depth = depth
 }

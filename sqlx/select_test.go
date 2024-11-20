@@ -1,6 +1,9 @@
 package sqlx_test
 
 import (
+	"fmt"
+	"os"
+	"strings"
 	"testing"
 
 	"github.com/thegogod/rum/sqlx"
@@ -9,31 +12,49 @@ import (
 func TestSelect(t *testing.T) {
 	t.Run("column", func(t *testing.T) {
 		t.Run("string", func(t *testing.T) {
+			expected, err := os.ReadFile("./testcases/select/column_string.sql")
+
+			if err != nil {
+				t.Fatal(err)
+			}
+
 			sql := sqlx.Select("a", "b", "c").Sql()
 
-			if sql != "SELECT a, b, c;" {
+			if sql != strings.TrimSuffix(string(expected), "\n") {
 				t.Fatalf(sql)
 			}
 		})
 
 		t.Run("select", func(t *testing.T) {
+			expected, err := os.ReadFile("./testcases/select/column_select.sql")
+
+			if err != nil {
+				t.Fatal(err)
+			}
+
 			sql := sqlx.Select().ColumnSelect(
 				sqlx.Select("a", "b", "c").From("test"),
 				"results",
 			).Sql()
 
-			if sql != "SELECT (SELECT a, b, c FROM test) as \"results\";" {
+			if sql != strings.TrimSuffix(string(expected), "\n") {
 				t.Fatalf(sql)
 			}
 		})
 
 		t.Run("string and select", func(t *testing.T) {
+			expected, err := os.ReadFile("./testcases/select/column_string_select.sql")
+
+			if err != nil {
+				t.Fatal(err)
+			}
+
 			sql := sqlx.Select("1", "2").ColumnSelect(
 				sqlx.Select("a", "b", "c").From("test"),
 				"results",
 			).Sql()
 
-			if sql != "SELECT 1, 2, (SELECT a, b, c FROM test) as \"results\";" {
+			if sql != strings.TrimSuffix(string(expected), "\n") {
 				t.Fatalf(sql)
 			}
 		})
@@ -41,20 +62,32 @@ func TestSelect(t *testing.T) {
 
 	t.Run("from", func(t *testing.T) {
 		t.Run("string", func(t *testing.T) {
+			expected, err := os.ReadFile("./testcases/select/from_string.sql")
+
+			if err != nil {
+				t.Fatal(err)
+			}
+
 			sql := sqlx.Select("a", "b", "c").From("test").Sql()
 
-			if sql != "SELECT a, b, c FROM test;" {
+			if sql != strings.TrimSuffix(string(expected), "\n") {
 				t.Fatalf(sql)
 			}
 		})
 
 		t.Run("select", func(t *testing.T) {
+			expected, err := os.ReadFile("./testcases/select/from_select.sql")
+
+			if err != nil {
+				t.Fatal(err)
+			}
+
 			sql := sqlx.Select("a", "b", "c").FromSelect(
 				sqlx.Select("d", "e", "f").From("test"),
 				"test",
 			).Sql()
 
-			if sql != "SELECT a, b, c FROM (SELECT d, e, f FROM test) as \"test\";" {
+			if sql != strings.TrimSuffix(string(expected), "\n") {
 				t.Fatalf(sql)
 			}
 		})
@@ -62,53 +95,65 @@ func TestSelect(t *testing.T) {
 
 	t.Run("where", func(t *testing.T) {
 		t.Run("and", func(t *testing.T) {
+			expected, err := os.ReadFile("./testcases/select/where_and.sql")
+
+			if err != nil {
+				t.Fatal(err)
+			}
+
 			sql := sqlx.Select(
 				"a", "b", "c",
 			).From("test").Where(
-				sqlx.And(
-					sqlx.Raw("a = b"),
-					sqlx.Raw("b = c"),
-				),
+				"a = b",
+			).And(
+				"b = c",
 			).Sql()
 
-			if sql != "SELECT a, b, c FROM test WHERE a = b AND b = c;" {
+			if sql != strings.TrimSuffix(string(expected), "\n") {
 				t.Fatalf(sql)
 			}
 		})
 
 		t.Run("or", func(t *testing.T) {
+			expected, err := os.ReadFile("./testcases/select/where_or.sql")
+
+			if err != nil {
+				t.Fatal(err)
+			}
+
 			sql := sqlx.Select(
 				"a", "b", "c",
 			).From("test").Where(
-				sqlx.Or(
-					sqlx.Raw("a = b"),
-					sqlx.Raw("b = c"),
-				),
+				"a = b",
+			).Or(
+				"b = c",
 			).Sql()
 
-			if sql != "SELECT a, b, c FROM test WHERE a = b OR b = c;" {
+			if sql != strings.TrimSuffix(string(expected), "\n") {
 				t.Fatalf(sql)
 			}
 		})
 
 		t.Run("and or", func(t *testing.T) {
+			expected, err := os.ReadFile("./testcases/select/where_and_or.sql")
+
+			if err != nil {
+				t.Fatal(err)
+			}
+
 			sql := sqlx.Select(
 				"a", "b", "c",
 			).From("test").Where(
-				sqlx.And(
-					sqlx.Raw("c = c"),
-					sqlx.And(
-						sqlx.Raw("a = b"),
-						sqlx.Raw("b = c"),
-					),
-					sqlx.Or(
-						sqlx.Raw("a = b"),
-						sqlx.Raw("b = c"),
-					),
-				),
+				"c = c",
+			).And(
+				sqlx.Where("a = b").And("b = c"),
+			).And(
+				sqlx.Where("a = b").Or("b = c"),
 			).Sql()
 
-			if sql != "SELECT a, b, c FROM test WHERE c = c AND (a = b AND b = c) AND (a = b OR b = c);" {
+			if sql != strings.TrimSuffix(string(expected), "\n") {
+				fmt.Println(string(expected))
+				fmt.Println(sql)
 				t.Fatalf(sql)
 			}
 		})
@@ -117,34 +162,87 @@ func TestSelect(t *testing.T) {
 	t.Run("pretty", func(t *testing.T) {
 		t.Run("column", func(t *testing.T) {
 			t.Run("string", func(t *testing.T) {
-				sql := sqlx.Select("a", "b", "c").SqlPretty()
+				expected, err := os.ReadFile("./testcases/select/column_string_pretty.sql")
 
-				if sql != "SELECT\n\ta,\n\tb,\n\tc;" {
+				if err != nil {
+					t.Fatal(err)
+				}
+
+				sql := sqlx.Select("a", "b", "c").SqlPretty("    ")
+
+				if sql != strings.TrimSuffix(string(expected), "\n") {
 					t.Fatalf(sql)
 				}
 			})
 
 			t.Run("select", func(t *testing.T) {
+				expected, err := os.ReadFile("./testcases/select/column_select_pretty.sql")
+
+				if err != nil {
+					t.Fatal(err)
+				}
+
 				sql := sqlx.Select().ColumnSelect(
 					sqlx.Select("a", "b", "c").From("test"),
 					"results",
-				).SqlPretty()
+				).SqlPretty("    ")
 
-				if sql != "SELECT\n\t(SELECT a, b, c FROM test) as \"results\";" {
+				if sql != strings.TrimSuffix(string(expected), "\n") {
 					t.Fatalf(sql)
 				}
 			})
 
-			// t.Run("string and select", func(t *testing.T) {
-			// 	sql := sqlx.Select("1", "2").ColumnSelect(
-			// 		sqlx.Select("a", "b", "c").From("test"),
-			// 		"results",
-			// 	).Sql()
+			t.Run("string and select", func(t *testing.T) {
+				expected, err := os.ReadFile("./testcases/select/column_string_select_pretty.sql")
 
-			// 	if sql != "SELECT 1, 2, (SELECT a, b, c FROM test) as \"results\";" {
-			// 		t.Fatalf(sql)
-			// 	}
-			// })
+				if err != nil {
+					t.Fatal(err)
+				}
+
+				sql := sqlx.Select("1", "2").ColumnSelect(
+					sqlx.Select("a", "b", "c").From("test"),
+					"results",
+				).SqlPretty("    ")
+
+				if sql != strings.TrimSuffix(string(expected), "\n") {
+					t.Fatalf(sql)
+				}
+			})
+		})
+
+		t.Run("from", func(t *testing.T) {
+			t.Run("string", func(t *testing.T) {
+				expected, err := os.ReadFile("./testcases/select/from_string_pretty.sql")
+
+				if err != nil {
+					t.Fatal(err)
+				}
+
+				sql := sqlx.Select("a", "b", "c").From("test").SqlPretty("    ")
+
+				if sql != strings.TrimSuffix(string(expected), "\n") {
+					t.Fatalf(sql)
+				}
+			})
+
+			t.Run("select", func(t *testing.T) {
+				expected, err := os.ReadFile("./testcases/select/from_select_pretty.sql")
+
+				if err != nil {
+					t.Fatal(err)
+				}
+
+				sql := sqlx.Select("a", "b", "c").FromSelect(
+					sqlx.Select("d", "e", "f").From("test"),
+					"test",
+				).SqlPretty("    ")
+
+				if sql != strings.TrimSuffix(string(expected), "\n") {
+					fmt.Println(string(expected))
+					fmt.Println(sql)
+					t.Fatalf(sql)
+				}
+			})
 		})
 	})
 }
