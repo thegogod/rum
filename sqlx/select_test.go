@@ -17,7 +17,11 @@ func TestSelect(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			sql := sqlx.Select("a", "b", "c").Sql()
+			sql := sqlx.Select().
+				Column("a").
+				Column("b").
+				Column("c").
+				Sql()
 
 			if sql != strings.TrimSuffix(string(expected), "\n") {
 				t.Fatalf(sql)
@@ -222,7 +226,11 @@ func TestSelect(t *testing.T) {
 					t.Fatal(err)
 				}
 
-				sql := sqlx.Select("a", "b", "c").SqlPretty("    ")
+				sql := sqlx.Select().
+					Column("a").
+					Column("b").
+					Column("c").
+					SqlPretty("    ")
 
 				if sql != strings.TrimSuffix(string(expected), "\n") {
 					t.Fatalf(sql)

@@ -26,12 +26,6 @@ func Select(columns ...string) *SelectStatement {
 	return &SelectStatement{
 		depth:   0,
 		columns: cols,
-		from:    nil,
-		where:   nil,
-		groupBy: nil,
-		orderBy: nil,
-		limit:   nil,
-		offset:  nil,
 	}
 }
 
