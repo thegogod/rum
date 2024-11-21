@@ -32,14 +32,17 @@ func (self *SelectStatement) Column(column string) *SelectStatement {
 	return self
 }
 
-func (self *SelectStatement) ColumnAs(column string, alias string) *SelectStatement {
-	self.columns = append(self.columns, As(Raw(column), alias))
-	return self
-}
+func (self *SelectStatement) ColumnAs(column any, alias string) *SelectStatement {
+	switch v := column.(type) {
+	case string:
+		self.columns = append(self.columns, As(Sql{v}, alias))
+		break
+	case *SelectStatement:
+		v.depth = self.depth + 1
+		self.columns = append(self.columns, As(Sql{v}, alias))
+		break
+	}
 
-func (self *SelectStatement) ColumnSelect(stmt *SelectStatement, alias string) *SelectStatement {
-	stmt.depth = self.depth + 1
-	self.columns = append(self.columns, As(stmt, alias))
 	return self
 }
 

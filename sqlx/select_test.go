@@ -31,7 +31,7 @@ func TestSelect(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			sql := sqlx.Select().ColumnSelect(
+			sql := sqlx.Select().ColumnAs(
 				sqlx.Select("a", "b", "c").From("test"),
 				"results",
 			).Sql()
@@ -48,7 +48,7 @@ func TestSelect(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			sql := sqlx.Select("1", "2").ColumnSelect(
+			sql := sqlx.Select("1", "2").ColumnAs(
 				sqlx.Select("a", "b", "c").From("test"),
 				"results",
 			).Sql()
@@ -179,7 +179,7 @@ func TestSelect(t *testing.T) {
 					t.Fatal(err)
 				}
 
-				sql := sqlx.Select().ColumnSelect(
+				sql := sqlx.Select().ColumnAs(
 					sqlx.Select("a", "b", "c").From("test"),
 					"results",
 				).SqlPretty("    ")
@@ -196,7 +196,7 @@ func TestSelect(t *testing.T) {
 					t.Fatal(err)
 				}
 
-				sql := sqlx.Select("1", "2").ColumnSelect(
+				sql := sqlx.Select("1", "2").ColumnAs(
 					sqlx.Select("a", "b", "c").From("test"),
 					"results",
 				).SqlPretty("    ")
