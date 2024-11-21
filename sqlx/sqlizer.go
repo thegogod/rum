@@ -9,6 +9,10 @@ type Sql struct {
 	Value any
 }
 
+func Raw(value string) *Sql {
+	return &Sql{value}
+}
+
 func (self Sql) Sql() string {
 	switch v := self.Value.(type) {
 	case string:
