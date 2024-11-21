@@ -10,6 +10,7 @@ type SelectStatement struct {
 	columns Columns
 	from    Sqlizer
 	where   *WhereClause
+	groupBy Sqlizer
 }
 
 func Select(columns ...string) *SelectStatement {
@@ -24,6 +25,7 @@ func Select(columns ...string) *SelectStatement {
 		columns: cols,
 		from:    nil,
 		where:   nil,
+		groupBy: nil,
 	}
 }
 
@@ -105,6 +107,11 @@ func (self *SelectStatement) Or(predicates ...any) *SelectStatement {
 	return self
 }
 
+func (self *SelectStatement) GroupBy(statement string) *SelectStatement {
+	self.groupBy = &Sql{statement}
+	return self
+}
+
 func (self SelectStatement) Sql() string {
 	parts := []string{"SELECT"}
 	parts = append(parts, self.columns.Sql())
@@ -115,6 +122,10 @@ func (self SelectStatement) Sql() string {
 
 	if self.where != nil {
 		parts = append(parts, "WHERE", self.where.Sql())
+	}
+
+	if self.groupBy != nil {
+		parts = append(parts, "GROUP BY", self.groupBy.Sql())
 	}
 
 	sql := strings.Join(parts, " ")
@@ -150,6 +161,12 @@ func (self SelectStatement) SqlPretty(indent string) string {
 	if self.where != nil {
 		lines := strings.Split(self.where.SqlPretty(indent), "\n")
 		parts = append(parts, "WHERE "+lines[0])
+		parts = append(parts, lines[1:]...)
+	}
+
+	if self.groupBy != nil {
+		lines := strings.Split(self.groupBy.SqlPretty(indent), "\n")
+		parts = append(parts, "GROUP BY "+lines[0])
 		parts = append(parts, lines[1:]...)
 	}
 
