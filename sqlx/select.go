@@ -11,6 +11,8 @@ type SelectStatement struct {
 	from    Sqlizer
 	where   *WhereClause
 	groupBy Sqlizer
+	limit   Sqlizer
+	offset  Sqlizer
 }
 
 func Select(columns ...string) *SelectStatement {
@@ -26,6 +28,8 @@ func Select(columns ...string) *SelectStatement {
 		from:    nil,
 		where:   nil,
 		groupBy: nil,
+		limit:   nil,
+		offset:  nil,
 	}
 }
 
@@ -107,8 +111,18 @@ func (self *SelectStatement) Or(predicates ...any) *SelectStatement {
 	return self
 }
 
-func (self *SelectStatement) GroupBy(statement string) *SelectStatement {
-	self.groupBy = &Sql{statement}
+func (self *SelectStatement) GroupBy(groupBy string) *SelectStatement {
+	self.groupBy = &Sql{groupBy}
+	return self
+}
+
+func (self *SelectStatement) Limit(limit string) *SelectStatement {
+	self.limit = &Sql{limit}
+	return self
+}
+
+func (self *SelectStatement) Offset(offset string) *SelectStatement {
+	self.offset = &Sql{offset}
 	return self
 }
 
@@ -126,6 +140,14 @@ func (self SelectStatement) Sql() string {
 
 	if self.groupBy != nil {
 		parts = append(parts, "GROUP BY", self.groupBy.Sql())
+	}
+
+	if self.limit != nil {
+		parts = append(parts, "LIMIT", self.limit.Sql())
+	}
+
+	if self.offset != nil {
+		parts = append(parts, "OFFSET", self.offset.Sql())
 	}
 
 	sql := strings.Join(parts, " ")
@@ -167,6 +189,18 @@ func (self SelectStatement) SqlPretty(indent string) string {
 	if self.groupBy != nil {
 		lines := strings.Split(self.groupBy.SqlPretty(indent), "\n")
 		parts = append(parts, "GROUP BY "+lines[0])
+		parts = append(parts, lines[1:]...)
+	}
+
+	if self.limit != nil {
+		lines := strings.Split(self.limit.SqlPretty(indent), "\n")
+		parts = append(parts, "LIMIT "+lines[0])
+		parts = append(parts, lines[1:]...)
+	}
+
+	if self.offset != nil {
+		lines := strings.Split(self.offset.SqlPretty(indent), "\n")
+		parts = append(parts, "OFFSET "+lines[0])
 		parts = append(parts, lines[1:]...)
 	}
 

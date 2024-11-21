@@ -264,6 +264,22 @@ func TestSelect(t *testing.T) {
 			}
 		})
 
+		t.Run("limit offset", func(t *testing.T) {
+			expected, err := os.ReadFile("./testcases/select/limit_offset.sql")
+
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			sql := sqlx.Select(
+				"*",
+			).From("test").Limit("10").Offset("20").Sql()
+
+			if sql != strings.TrimSuffix(string(expected), "\n") {
+				t.Fatalf(sql)
+			}
+		})
+
 		t.Run("where", func(t *testing.T) {
 			t.Run("and", func(t *testing.T) {
 				expected, err := os.ReadFile("./testcases/select/where_and_pretty.sql")
@@ -342,6 +358,22 @@ func TestSelect(t *testing.T) {
 			sql := sqlx.Select(
 				"id", "name", "created_at",
 			).From("test").GroupBy("id").SqlPretty("    ")
+
+			if sql != strings.TrimSuffix(string(expected), "\n") {
+				t.Fatalf(sql)
+			}
+		})
+
+		t.Run("limit offset", func(t *testing.T) {
+			expected, err := os.ReadFile("./testcases/select/limit_offset_pretty.sql")
+
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			sql := sqlx.Select(
+				"*",
+			).From("test").Limit("10").Offset("20").SqlPretty("    ")
 
 			if sql != strings.TrimSuffix(string(expected), "\n") {
 				t.Fatalf(sql)

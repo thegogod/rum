@@ -1,0 +1,5 @@
+SELECT
+    *
+FROM test
+LIMIT 10
+OFFSET 20;
