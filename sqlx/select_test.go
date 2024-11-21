@@ -81,9 +81,11 @@ func TestSelect(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			sql := sqlx.Select("a", "b", "c").FromSelect(
-				sqlx.Select("d", "e", "f").From("test"),
-				"test",
+			sql := sqlx.Select("a", "b", "c").From(
+				sqlx.As(
+					sqlx.Select("d", "e", "f").From("test"),
+					"test",
+				),
 			).Sql()
 
 			if sql != strings.TrimSuffix(string(expected), "\n") {
@@ -229,9 +231,11 @@ func TestSelect(t *testing.T) {
 					t.Fatal(err)
 				}
 
-				sql := sqlx.Select("a", "b", "c").FromSelect(
-					sqlx.Select("d", "e", "f").From("test"),
-					"test",
+				sql := sqlx.Select("a", "b", "c").From(
+					sqlx.As(
+						sqlx.Select("d", "e", "f").From("test"),
+						"test",
+					),
 				).SqlPretty("    ")
 
 				if sql != strings.TrimSuffix(string(expected), "\n") {

@@ -46,25 +46,31 @@ func (self *SelectStatement) ColumnAs(column any, alias string) *SelectStatement
 	return self
 }
 
-func (self *SelectStatement) From(from string) *SelectStatement {
-	self.from = Raw(from)
-	return self
-}
+func (self *SelectStatement) From(from any) *SelectStatement {
+	switch v := from.(type) {
+	case string:
+		self.from = Sql{from}
+		break
+	case *SelectStatement:
+		v.depth = self.depth + 1
+		self.from = v
+		break
+	case *AsClause:
+		switch v := v.stmt.(type) {
+		case *SelectStatement:
+			v.depth = self.depth + 1
+			break
+		}
 
-func (self *SelectStatement) FromSelect(stmt *SelectStatement, alias string) *SelectStatement {
-	stmt.depth = self.depth + 1
-	self.from = As(stmt, alias)
+		self.from = v
+		break
+	}
+
 	return self
 }
 
 func (self *SelectStatement) Where(predicate any) *SelectStatement {
-	switch v := predicate.(type) {
-	case string:
-		self.where = Where(Sql{v})
-	case Sqlizer:
-		self.where = Where(Sql{v})
-	}
-
+	self.where = Where(Sql{predicate})
 	return self
 }
 
