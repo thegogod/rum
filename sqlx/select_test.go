@@ -162,6 +162,57 @@ func TestSelect(t *testing.T) {
 		})
 	})
 
+	t.Run("group by", func(t *testing.T) {
+		expected, err := os.ReadFile("./testcases/select/group_by.sql")
+
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		sql := sqlx.Select(
+			"id", "name", "created_at",
+		).From("test").GroupBy("id").Sql()
+
+		if sql != strings.TrimSuffix(string(expected), "\n") {
+			t.Fatalf(sql)
+		}
+	})
+
+	t.Run("limit offset", func(t *testing.T) {
+		expected, err := os.ReadFile("./testcases/select/limit_offset.sql")
+
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		sql := sqlx.Select(
+			"*",
+		).From("test").Limit("10").Offset("20").Sql()
+
+		if sql != strings.TrimSuffix(string(expected), "\n") {
+			t.Fatalf(sql)
+		}
+	})
+
+	t.Run("order by", func(t *testing.T) {
+		expected, err := os.ReadFile("./testcases/select/order_by.sql")
+
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		sql := sqlx.Select(
+			"*",
+		).From("test").OrderBy(
+			"created_at",
+			sqlx.Desc,
+		).Sql()
+
+		if sql != strings.TrimSuffix(string(expected), "\n") {
+			t.Fatalf(sql)
+		}
+	})
+
 	t.Run("pretty", func(t *testing.T) {
 		t.Run("column", func(t *testing.T) {
 			t.Run("string", func(t *testing.T) {
@@ -246,38 +297,6 @@ func TestSelect(t *testing.T) {
 					t.Fatalf(sql)
 				}
 			})
-		})
-
-		t.Run("group by", func(t *testing.T) {
-			expected, err := os.ReadFile("./testcases/select/group_by.sql")
-
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			sql := sqlx.Select(
-				"id", "name", "created_at",
-			).From("test").GroupBy("id").Sql()
-
-			if sql != strings.TrimSuffix(string(expected), "\n") {
-				t.Fatalf(sql)
-			}
-		})
-
-		t.Run("limit offset", func(t *testing.T) {
-			expected, err := os.ReadFile("./testcases/select/limit_offset.sql")
-
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			sql := sqlx.Select(
-				"*",
-			).From("test").Limit("10").Offset("20").Sql()
-
-			if sql != strings.TrimSuffix(string(expected), "\n") {
-				t.Fatalf(sql)
-			}
 		})
 
 		t.Run("where", func(t *testing.T) {
@@ -374,6 +393,25 @@ func TestSelect(t *testing.T) {
 			sql := sqlx.Select(
 				"*",
 			).From("test").Limit("10").Offset("20").SqlPretty("    ")
+
+			if sql != strings.TrimSuffix(string(expected), "\n") {
+				t.Fatalf(sql)
+			}
+		})
+
+		t.Run("order by", func(t *testing.T) {
+			expected, err := os.ReadFile("./testcases/select/order_by_pretty.sql")
+
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			sql := sqlx.Select(
+				"*",
+			).From("test").OrderBy(
+				"created_at",
+				sqlx.Desc,
+			).SqlPretty("    ")
 
 			if sql != strings.TrimSuffix(string(expected), "\n") {
 				t.Fatalf(sql)

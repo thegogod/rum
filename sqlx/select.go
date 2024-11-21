@@ -11,6 +11,7 @@ type SelectStatement struct {
 	from    Sqlizer
 	where   *WhereClause
 	groupBy Sqlizer
+	orderBy Sqlizer
 	limit   Sqlizer
 	offset  Sqlizer
 }
@@ -28,6 +29,7 @@ func Select(columns ...string) *SelectStatement {
 		from:    nil,
 		where:   nil,
 		groupBy: nil,
+		orderBy: nil,
 		limit:   nil,
 		offset:  nil,
 	}
@@ -116,6 +118,11 @@ func (self *SelectStatement) GroupBy(groupBy string) *SelectStatement {
 	return self
 }
 
+func (self *SelectStatement) OrderBy(statement any, direction Direction) *SelectStatement {
+	self.orderBy = OrderBy(statement, direction)
+	return self
+}
+
 func (self *SelectStatement) Limit(limit string) *SelectStatement {
 	self.limit = &Sql{limit}
 	return self
@@ -140,6 +147,10 @@ func (self SelectStatement) Sql() string {
 
 	if self.groupBy != nil {
 		parts = append(parts, "GROUP BY", self.groupBy.Sql())
+	}
+
+	if self.orderBy != nil {
+		parts = append(parts, "ORDER BY", self.orderBy.Sql())
 	}
 
 	if self.limit != nil {
@@ -189,6 +200,12 @@ func (self SelectStatement) SqlPretty(indent string) string {
 	if self.groupBy != nil {
 		lines := strings.Split(self.groupBy.SqlPretty(indent), "\n")
 		parts = append(parts, "GROUP BY "+lines[0])
+		parts = append(parts, lines[1:]...)
+	}
+
+	if self.orderBy != nil {
+		lines := strings.Split(self.orderBy.SqlPretty(indent), "\n")
+		parts = append(parts, "ORDER BY "+lines[0])
 		parts = append(parts, lines[1:]...)
 	}
 
