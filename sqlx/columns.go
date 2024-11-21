@@ -31,3 +31,9 @@ func (self Columns) SqlPretty(indent string) string {
 
 	return strings.Join(parts, "\n")
 }
+
+func (self Columns) setDepth(depth uint) {
+	for _, column := range self {
+		column.setDepth(depth)
+	}
+}

@@ -20,3 +20,7 @@ func (self AsClause) Sql() string {
 func (self AsClause) SqlPretty(indent string) string {
 	return fmt.Sprintf(`%s as "%s"`, self.stmt.SqlPretty(indent), self.alias)
 }
+
+func (self *AsClause) setDepth(depth uint) {
+	self.stmt.setDepth(depth)
+}

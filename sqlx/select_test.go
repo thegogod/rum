@@ -107,7 +107,11 @@ func TestSelect(t *testing.T) {
 			).From("test").Where(
 				"a = b",
 			).And(
-				"b = c",
+				sqlx.Expr(
+					sqlx.Select("*").From("tester"),
+					"IS",
+					"NULL",
+				),
 			).Sql()
 
 			if sql != strings.TrimSuffix(string(expected), "\n") {
@@ -257,7 +261,11 @@ func TestSelect(t *testing.T) {
 				).From("test").Where(
 					"a = b",
 				).And(
-					"b = c",
+					sqlx.Expr(
+						sqlx.Select("*").From("tester"),
+						"IS",
+						"NULL",
+					),
 				).SqlPretty("    ")
 
 				if sql != strings.TrimSuffix(string(expected), "\n") {

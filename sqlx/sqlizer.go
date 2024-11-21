@@ -3,6 +3,8 @@ package sqlx
 type Sqlizer interface {
 	Sql() string
 	SqlPretty(indent string) string
+
+	setDepth(depth uint)
 }
 
 type Sql struct {
@@ -33,4 +35,11 @@ func (self Sql) SqlPretty(indent string) string {
 	}
 
 	panic("invalid type")
+}
+
+func (self *Sql) setDepth(depth uint) {
+	switch v := self.Value.(type) {
+	case Sqlizer:
+		v.setDepth(depth)
+	}
 }

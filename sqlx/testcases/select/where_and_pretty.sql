@@ -4,4 +4,8 @@ SELECT
     c
 FROM test
 WHERE a = b
-AND b = c;
+AND (
+    SELECT
+        *
+    FROM tester
+) IS NULL;

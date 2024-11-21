@@ -35,11 +35,11 @@ func (self *SelectStatement) Column(column string) *SelectStatement {
 func (self *SelectStatement) ColumnAs(column any, alias string) *SelectStatement {
 	switch v := column.(type) {
 	case string:
-		self.columns = append(self.columns, As(Sql{v}, alias))
+		self.columns = append(self.columns, As(&Sql{v}, alias))
 		break
 	case *SelectStatement:
 		v.depth = self.depth + 1
-		self.columns = append(self.columns, As(Sql{v}, alias))
+		self.columns = append(self.columns, As(&Sql{v}, alias))
 		break
 	}
 
@@ -49,7 +49,7 @@ func (self *SelectStatement) ColumnAs(column any, alias string) *SelectStatement
 func (self *SelectStatement) From(from any) *SelectStatement {
 	switch v := from.(type) {
 	case string:
-		self.from = Sql{from}
+		self.from = &Sql{from}
 		break
 	case *SelectStatement:
 		v.depth = self.depth + 1
@@ -70,19 +70,20 @@ func (self *SelectStatement) From(from any) *SelectStatement {
 }
 
 func (self *SelectStatement) Where(predicate any) *SelectStatement {
-	self.where = Where(Sql{predicate})
+	switch v := predicate.(type) {
+	case Sqlizer:
+		v.setDepth(self.depth + 1)
+	}
+
+	self.where = Where(predicate)
 	return self
 }
 
 func (self *SelectStatement) And(predicates ...any) *SelectStatement {
 	for _, predicate := range predicates {
 		switch v := predicate.(type) {
-		case *SelectStatement:
-			v.depth = self.depth + 1
-			break
-		case *WhereClause:
-			v.depth = self.depth + 1
-			break
+		case Sqlizer:
+			v.setDepth(self.depth + 1)
 		}
 
 		self.where.And(predicate)
@@ -94,12 +95,8 @@ func (self *SelectStatement) And(predicates ...any) *SelectStatement {
 func (self *SelectStatement) Or(predicates ...any) *SelectStatement {
 	for _, predicate := range predicates {
 		switch v := predicate.(type) {
-		case *SelectStatement:
-			v.depth = self.depth + 1
-			break
-		case *WhereClause:
-			v.depth = self.depth + 1
-			break
+		case Sqlizer:
+			v.setDepth(self.depth + 1)
 		}
 
 		self.where.Or(predicate)
@@ -171,4 +168,17 @@ func (self SelectStatement) SqlPretty(indent string) string {
 	}
 
 	return sql
+}
+
+func (self *SelectStatement) setDepth(depth uint) {
+	self.depth = depth
+	self.columns.setDepth(depth + 1)
+
+	if self.from != nil {
+		self.from.setDepth(depth + 1)
+	}
+
+	if self.where != nil {
+		self.where.setDepth(depth)
+	}
 }

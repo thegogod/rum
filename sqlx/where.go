@@ -24,13 +24,13 @@ type WhereClause struct {
 }
 
 func Where(predicate any) *WhereClause {
-	return &WhereClause{0, Sql{predicate}, []_Condition{}}
+	return &WhereClause{0, &Sql{predicate}, []_Condition{}}
 }
 
 func (self *WhereClause) And(predicate any) *WhereClause {
 	self.conditions = append(self.conditions, _Condition{
 		kind:  and,
-		value: Sql{predicate},
+		value: &Sql{predicate},
 	})
 
 	return self
@@ -39,7 +39,7 @@ func (self *WhereClause) And(predicate any) *WhereClause {
 func (self *WhereClause) Or(predicate any) *WhereClause {
 	self.conditions = append(self.conditions, _Condition{
 		kind:  or,
-		value: Sql{predicate},
+		value: &Sql{predicate},
 	})
 
 	return self
@@ -78,4 +78,13 @@ func (self WhereClause) SqlPretty(indent string) string {
 	}
 
 	return strings.Join(parts, "\n")
+}
+
+func (self *WhereClause) setDepth(depth uint) {
+	self.depth = depth
+	self.predicate.setDepth(depth + 1)
+
+	for _, condition := range self.conditions {
+		condition.value.setDepth(depth + 1)
+	}
 }
