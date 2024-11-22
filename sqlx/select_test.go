@@ -167,6 +167,22 @@ func TestSelect(t *testing.T) {
 	})
 
 	t.Run("join", func(t *testing.T) {
+		t.Run("join", func(t *testing.T) {
+			expected, err := os.ReadFile("./testcases/select/join.sql")
+
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			sql := sqlx.Select("*").From("a").Join(
+				sqlx.Join("b", "a.id = b.id").And("b.deleted_at IS NULL"),
+			).Sql()
+
+			if sql != strings.TrimSuffix(string(expected), "\n") {
+				t.Fatalf(sql)
+			}
+		})
+
 		t.Run("left", func(t *testing.T) {
 			expected, err := os.ReadFile("./testcases/select/left_join.sql")
 
@@ -434,6 +450,22 @@ func TestSelect(t *testing.T) {
 		})
 
 		t.Run("join", func(t *testing.T) {
+			t.Run("join", func(t *testing.T) {
+				expected, err := os.ReadFile("./testcases/select/join_pretty.sql")
+
+				if err != nil {
+					t.Fatal(err)
+				}
+
+				sql := sqlx.Select("*").From("a").Join(
+					sqlx.Join("b", "a.id = b.id").And("b.deleted_at IS NULL"),
+				).SqlPretty("    ")
+
+				if sql != strings.TrimSuffix(string(expected), "\n") {
+					t.Fatalf(sql)
+				}
+			})
+
 			t.Run("left", func(t *testing.T) {
 				expected, err := os.ReadFile("./testcases/select/left_join_pretty.sql")
 

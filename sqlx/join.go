@@ -11,6 +11,10 @@ type JoinClause struct {
 	where  *WhereClause
 }
 
+func Join(table string, predicate any) *JoinClause {
+	return &JoinClause{nil, table, Where(predicate)}
+}
+
 func LeftJoin(table string, predicate any) *JoinClause {
 	method := "LEFT"
 	return &JoinClause{&method, table, Where(predicate)}
