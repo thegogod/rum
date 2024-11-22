@@ -100,7 +100,7 @@ func TestSelect(t *testing.T) {
 
 	t.Run("where", func(t *testing.T) {
 		t.Run("and", func(t *testing.T) {
-			expected, err := os.ReadFile("./testcases/select/where_and.sql")
+			expected, err := os.ReadFile("./testcases/select/where/and.sql")
 
 			if err != nil {
 				t.Fatal(err)
@@ -124,7 +124,7 @@ func TestSelect(t *testing.T) {
 		})
 
 		t.Run("or", func(t *testing.T) {
-			expected, err := os.ReadFile("./testcases/select/where_or.sql")
+			expected, err := os.ReadFile("./testcases/select/where/or.sql")
 
 			if err != nil {
 				t.Fatal(err)
@@ -144,7 +144,7 @@ func TestSelect(t *testing.T) {
 		})
 
 		t.Run("and or", func(t *testing.T) {
-			expected, err := os.ReadFile("./testcases/select/where_and_or.sql")
+			expected, err := os.ReadFile("./testcases/select/where/and_or.sql")
 
 			if err != nil {
 				t.Fatal(err)
@@ -383,7 +383,7 @@ func TestSelect(t *testing.T) {
 
 		t.Run("where", func(t *testing.T) {
 			t.Run("and", func(t *testing.T) {
-				expected, err := os.ReadFile("./testcases/select/where_and_pretty.sql")
+				expected, err := os.ReadFile("./testcases/select/where/and_pretty.sql")
 
 				if err != nil {
 					t.Fatal(err)
@@ -407,7 +407,7 @@ func TestSelect(t *testing.T) {
 			})
 
 			t.Run("or", func(t *testing.T) {
-				expected, err := os.ReadFile("./testcases/select/where_or_pretty.sql")
+				expected, err := os.ReadFile("./testcases/select/where/or_pretty.sql")
 
 				if err != nil {
 					t.Fatal(err)
@@ -427,7 +427,7 @@ func TestSelect(t *testing.T) {
 			})
 
 			t.Run("and or", func(t *testing.T) {
-				expected, err := os.ReadFile("./testcases/select/where_and_or_pretty.sql")
+				expected, err := os.ReadFile("./testcases/select/where/and_or_pretty.sql")
 
 				if err != nil {
 					t.Fatal(err)
