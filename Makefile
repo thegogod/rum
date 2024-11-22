@@ -32,4 +32,9 @@ test.bench.profile:
 	go clean -testcache
 	go test -bench=. -benchmem -memprofile memory.out
 
+publish:
+	git tag $(tag)
+	git push origin $(tag)
+	go list -m github.com/thegogod/rum@$(tag)
+
 .PHONY: test
