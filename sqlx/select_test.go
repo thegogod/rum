@@ -11,7 +11,7 @@ import (
 func TestSelect(t *testing.T) {
 	t.Run("column", func(t *testing.T) {
 		t.Run("string", func(t *testing.T) {
-			expected, err := os.ReadFile("./testcases/select/column_string.sql")
+			expected, err := os.ReadFile("./testcases/select/column/string.sql")
 
 			if err != nil {
 				t.Fatal(err)
@@ -29,7 +29,7 @@ func TestSelect(t *testing.T) {
 		})
 
 		t.Run("select", func(t *testing.T) {
-			expected, err := os.ReadFile("./testcases/select/column_select.sql")
+			expected, err := os.ReadFile("./testcases/select/column/select.sql")
 
 			if err != nil {
 				t.Fatal(err)
@@ -45,7 +45,7 @@ func TestSelect(t *testing.T) {
 		})
 
 		t.Run("string and select", func(t *testing.T) {
-			expected, err := os.ReadFile("./testcases/select/column_string_select.sql")
+			expected, err := os.ReadFile("./testcases/select/column/string_select.sql")
 
 			if err != nil {
 				t.Fatal(err)
@@ -294,7 +294,7 @@ func TestSelect(t *testing.T) {
 	t.Run("pretty", func(t *testing.T) {
 		t.Run("column", func(t *testing.T) {
 			t.Run("string", func(t *testing.T) {
-				expected, err := os.ReadFile("./testcases/select/column_string_pretty.sql")
+				expected, err := os.ReadFile("./testcases/select/column/string_pretty.sql")
 
 				if err != nil {
 					t.Fatal(err)
@@ -312,7 +312,7 @@ func TestSelect(t *testing.T) {
 			})
 
 			t.Run("select", func(t *testing.T) {
-				expected, err := os.ReadFile("./testcases/select/column_select_pretty.sql")
+				expected, err := os.ReadFile("./testcases/select/column/select_pretty.sql")
 
 				if err != nil {
 					t.Fatal(err)
@@ -328,7 +328,7 @@ func TestSelect(t *testing.T) {
 			})
 
 			t.Run("string and select", func(t *testing.T) {
-				expected, err := os.ReadFile("./testcases/select/column_string_select_pretty.sql")
+				expected, err := os.ReadFile("./testcases/select/column/string_select_pretty.sql")
 
 				if err != nil {
 					t.Fatal(err)
