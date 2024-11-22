@@ -65,7 +65,7 @@ func TestSelect(t *testing.T) {
 
 	t.Run("from", func(t *testing.T) {
 		t.Run("string", func(t *testing.T) {
-			expected, err := os.ReadFile("./testcases/select/from_string.sql")
+			expected, err := os.ReadFile("./testcases/select/from/string.sql")
 
 			if err != nil {
 				t.Fatal(err)
@@ -79,7 +79,7 @@ func TestSelect(t *testing.T) {
 		})
 
 		t.Run("select", func(t *testing.T) {
-			expected, err := os.ReadFile("./testcases/select/from_select.sql")
+			expected, err := os.ReadFile("./testcases/select/from/select.sql")
 
 			if err != nil {
 				t.Fatal(err)
@@ -348,7 +348,7 @@ func TestSelect(t *testing.T) {
 
 		t.Run("from", func(t *testing.T) {
 			t.Run("string", func(t *testing.T) {
-				expected, err := os.ReadFile("./testcases/select/from_string_pretty.sql")
+				expected, err := os.ReadFile("./testcases/select/from/string_pretty.sql")
 
 				if err != nil {
 					t.Fatal(err)
@@ -362,7 +362,7 @@ func TestSelect(t *testing.T) {
 			})
 
 			t.Run("select", func(t *testing.T) {
-				expected, err := os.ReadFile("./testcases/select/from_select_pretty.sql")
+				expected, err := os.ReadFile("./testcases/select/from/select_pretty.sql")
 
 				if err != nil {
 					t.Fatal(err)
