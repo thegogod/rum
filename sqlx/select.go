@@ -23,38 +23,24 @@ func Select(columns ...any) *SelectStatement {
 		cols[i] = &Sql{col}
 	}
 
-	self := &SelectStatement{
+	return &SelectStatement{
 		depth:   0,
 		columns: cols,
 	}
-
-	self.setDepth(self.depth)
-	return self
 }
 
 func (self *SelectStatement) Column(column any) *SelectStatement {
-	switch v := column.(type) {
-	case string:
-		self.columns = append(self.columns, &Sql{v})
-		break
-	case Sqlizer:
-		v.setDepth(self.depth + 1)
-		self.columns = append(self.columns, v)
-		break
-	}
-
+	self.columns = append(self.columns, &Sql{column})
 	return self
 }
 
 func (self *SelectStatement) From(from any) *SelectStatement {
 	self.from = &Sql{from}
-	self.setDepth(self.depth)
 	return self
 }
 
 func (self *SelectStatement) Where(predicate any) *SelectStatement {
 	self.where = Where(predicate)
-	self.setDepth(self.depth)
 	return self
 }
 
@@ -63,7 +49,6 @@ func (self *SelectStatement) And(predicates ...any) *SelectStatement {
 		self.where.And(predicate)
 	}
 
-	self.setDepth(self.depth)
 	return self
 }
 
@@ -72,7 +57,6 @@ func (self *SelectStatement) Or(predicates ...any) *SelectStatement {
 		self.where.Or(predicate)
 	}
 
-	self.setDepth(self.depth)
 	return self
 }
 
@@ -101,6 +85,7 @@ func (self *SelectStatement) As(alias string) Sqlizer {
 }
 
 func (self SelectStatement) Sql() string {
+	self.setDepth(self.depth)
 	parts := []string{"SELECT"}
 	parts = append(parts, self.columns.Sql())
 
@@ -140,6 +125,7 @@ func (self SelectStatement) Sql() string {
 }
 
 func (self SelectStatement) SqlPretty(indent string) string {
+	self.setDepth(self.depth)
 	parts := []string{}
 
 	if self.depth > 0 {
