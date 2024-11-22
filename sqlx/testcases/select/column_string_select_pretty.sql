@@ -7,4 +7,4 @@ SELECT
             b,
             c
         FROM test
-    ) as "results";
+    ) AS "results";

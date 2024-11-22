@@ -8,4 +8,4 @@ FROM (
         e,
         f
     FROM test
-) as "test";
+) AS "test";

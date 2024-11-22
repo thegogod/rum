@@ -1,1 +1,1 @@
-SELECT (SELECT a, b, c FROM test) as "results";
+SELECT (SELECT a, b, c FROM test) AS "results";

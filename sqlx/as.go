@@ -14,11 +14,11 @@ func As(stmt Sqlizer, alias string) *AsClause {
 }
 
 func (self AsClause) Sql() string {
-	return fmt.Sprintf(`%s as "%s"`, self.stmt.Sql(), self.alias)
+	return fmt.Sprintf(`%s AS "%s"`, self.stmt.Sql(), self.alias)
 }
 
 func (self AsClause) SqlPretty(indent string) string {
-	return fmt.Sprintf(`%s as "%s"`, self.stmt.SqlPretty(indent), self.alias)
+	return fmt.Sprintf(`%s AS "%s"`, self.stmt.SqlPretty(indent), self.alias)
 }
 
 func (self *AsClause) setDepth(depth uint) {
