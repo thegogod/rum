@@ -168,7 +168,7 @@ func TestSelect(t *testing.T) {
 
 	t.Run("join", func(t *testing.T) {
 		t.Run("join", func(t *testing.T) {
-			expected, err := os.ReadFile("./testcases/select/join.sql")
+			expected, err := os.ReadFile("./testcases/select/join/join.sql")
 
 			if err != nil {
 				t.Fatal(err)
@@ -184,7 +184,7 @@ func TestSelect(t *testing.T) {
 		})
 
 		t.Run("left", func(t *testing.T) {
-			expected, err := os.ReadFile("./testcases/select/left_join.sql")
+			expected, err := os.ReadFile("./testcases/select/join/left_join.sql")
 
 			if err != nil {
 				t.Fatal(err)
@@ -200,7 +200,7 @@ func TestSelect(t *testing.T) {
 		})
 
 		t.Run("left outer", func(t *testing.T) {
-			expected, err := os.ReadFile("./testcases/select/left_outer_join.sql")
+			expected, err := os.ReadFile("./testcases/select/join/left_outer_join.sql")
 
 			if err != nil {
 				t.Fatal(err)
@@ -451,7 +451,7 @@ func TestSelect(t *testing.T) {
 
 		t.Run("join", func(t *testing.T) {
 			t.Run("join", func(t *testing.T) {
-				expected, err := os.ReadFile("./testcases/select/join_pretty.sql")
+				expected, err := os.ReadFile("./testcases/select/join/join_pretty.sql")
 
 				if err != nil {
 					t.Fatal(err)
@@ -467,7 +467,7 @@ func TestSelect(t *testing.T) {
 			})
 
 			t.Run("left", func(t *testing.T) {
-				expected, err := os.ReadFile("./testcases/select/left_join_pretty.sql")
+				expected, err := os.ReadFile("./testcases/select/join/left_join_pretty.sql")
 
 				if err != nil {
 					t.Fatal(err)
@@ -483,7 +483,7 @@ func TestSelect(t *testing.T) {
 			})
 
 			t.Run("left outer", func(t *testing.T) {
-				expected, err := os.ReadFile("./testcases/select/left_outer_join_pretty.sql")
+				expected, err := os.ReadFile("./testcases/select/join/left_outer_join_pretty.sql")
 
 				if err != nil {
 					t.Fatal(err)
