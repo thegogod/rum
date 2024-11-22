@@ -214,6 +214,70 @@ func TestSelect(t *testing.T) {
 				t.Fatalf(sql)
 			}
 		})
+
+		t.Run("right", func(t *testing.T) {
+			expected, err := os.ReadFile("./testcases/select/join/right_join.sql")
+
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			sql := sqlx.Select("*").From("a").Join(
+				sqlx.RightJoin("b", "a.id = b.id").And("b.deleted_at IS NULL"),
+			).Sql()
+
+			if sql != strings.TrimSuffix(string(expected), "\n") {
+				t.Fatalf(sql)
+			}
+		})
+
+		t.Run("right outer", func(t *testing.T) {
+			expected, err := os.ReadFile("./testcases/select/join/right_outer_join.sql")
+
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			sql := sqlx.Select("*").From("a").Join(
+				sqlx.RightOuterJoin("b", "a.id = b.id").And("b.deleted_at IS NULL"),
+			).Sql()
+
+			if sql != strings.TrimSuffix(string(expected), "\n") {
+				t.Fatalf(sql)
+			}
+		})
+
+		t.Run("full outer", func(t *testing.T) {
+			expected, err := os.ReadFile("./testcases/select/join/full_outer_join.sql")
+
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			sql := sqlx.Select("*").From("a").Join(
+				sqlx.FullOuterJoin("b", "a.id = b.id").And("b.deleted_at IS NULL"),
+			).Sql()
+
+			if sql != strings.TrimSuffix(string(expected), "\n") {
+				t.Fatalf(sql)
+			}
+		})
+
+		t.Run("cross", func(t *testing.T) {
+			expected, err := os.ReadFile("./testcases/select/join/cross_join.sql")
+
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			sql := sqlx.Select("*").From("a").Join(
+				sqlx.CrossJoin("b", "a.id = b.id").And("b.deleted_at IS NULL"),
+			).Sql()
+
+			if sql != strings.TrimSuffix(string(expected), "\n") {
+				t.Fatalf(sql)
+			}
+		})
 	})
 
 	t.Run("group by", func(t *testing.T) {
@@ -491,6 +555,70 @@ func TestSelect(t *testing.T) {
 
 				sql := sqlx.Select("*").From("a").Join(
 					sqlx.LeftOuterJoin("b", "a.id = b.id").And("b.deleted_at IS NULL"),
+				).SqlPretty("    ")
+
+				if sql != strings.TrimSuffix(string(expected), "\n") {
+					t.Fatalf(sql)
+				}
+			})
+
+			t.Run("right", func(t *testing.T) {
+				expected, err := os.ReadFile("./testcases/select/join/right_join_pretty.sql")
+
+				if err != nil {
+					t.Fatal(err)
+				}
+
+				sql := sqlx.Select("*").From("a").Join(
+					sqlx.RightJoin("b", "a.id = b.id").And("b.deleted_at IS NULL"),
+				).SqlPretty("    ")
+
+				if sql != strings.TrimSuffix(string(expected), "\n") {
+					t.Fatalf(sql)
+				}
+			})
+
+			t.Run("right outer", func(t *testing.T) {
+				expected, err := os.ReadFile("./testcases/select/join/right_outer_join_pretty.sql")
+
+				if err != nil {
+					t.Fatal(err)
+				}
+
+				sql := sqlx.Select("*").From("a").Join(
+					sqlx.RightOuterJoin("b", "a.id = b.id").And("b.deleted_at IS NULL"),
+				).SqlPretty("    ")
+
+				if sql != strings.TrimSuffix(string(expected), "\n") {
+					t.Fatalf(sql)
+				}
+			})
+
+			t.Run("full outer", func(t *testing.T) {
+				expected, err := os.ReadFile("./testcases/select/join/full_outer_join_pretty.sql")
+
+				if err != nil {
+					t.Fatal(err)
+				}
+
+				sql := sqlx.Select("*").From("a").Join(
+					sqlx.FullOuterJoin("b", "a.id = b.id").And("b.deleted_at IS NULL"),
+				).SqlPretty("    ")
+
+				if sql != strings.TrimSuffix(string(expected), "\n") {
+					t.Fatalf(sql)
+				}
+			})
+
+			t.Run("cross", func(t *testing.T) {
+				expected, err := os.ReadFile("./testcases/select/join/cross_join_pretty.sql")
+
+				if err != nil {
+					t.Fatal(err)
+				}
+
+				sql := sqlx.Select("*").From("a").Join(
+					sqlx.CrossJoin("b", "a.id = b.id").And("b.deleted_at IS NULL"),
 				).SqlPretty("    ")
 
 				if sql != strings.TrimSuffix(string(expected), "\n") {

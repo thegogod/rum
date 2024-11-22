@@ -25,6 +25,26 @@ func LeftOuterJoin(table string, predicate any) *JoinClause {
 	return &JoinClause{&method, table, Where(predicate)}
 }
 
+func RightJoin(table string, predicate any) *JoinClause {
+	method := "RIGHT"
+	return &JoinClause{&method, table, Where(predicate)}
+}
+
+func RightOuterJoin(table string, predicate any) *JoinClause {
+	method := "RIGHT OUTER"
+	return &JoinClause{&method, table, Where(predicate)}
+}
+
+func FullOuterJoin(table string, predicate any) *JoinClause {
+	method := "FULL OUTER"
+	return &JoinClause{&method, table, Where(predicate)}
+}
+
+func CrossJoin(table string, predicate any) *JoinClause {
+	method := "CROSS"
+	return &JoinClause{&method, table, Where(predicate)}
+}
+
 func (self *JoinClause) And(predicate any) *JoinClause {
 	self.where.And(predicate)
 	return self
