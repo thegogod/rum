@@ -35,9 +35,8 @@ func TestSelect(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			sql := sqlx.Select().ColumnAs(
-				sqlx.Select("a", "b", "c").From("test"),
-				"results",
+			sql := sqlx.Select(
+				sqlx.Select("a", "b", "c").From("test").As("results"),
 			).Sql()
 
 			if sql != strings.TrimSuffix(string(expected), "\n") {
@@ -52,9 +51,10 @@ func TestSelect(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			sql := sqlx.Select("1", "2").ColumnAs(
-				sqlx.Select("a", "b", "c").From("test"),
-				"results",
+			sql := sqlx.Select(
+				"1",
+				"2",
+				sqlx.Select("a", "b", "c").From("test").As("results"),
 			).Sql()
 
 			if sql != strings.TrimSuffix(string(expected), "\n") {
@@ -227,9 +227,7 @@ func TestSelect(t *testing.T) {
 		sql := sqlx.Select(
 			"a",
 			"b",
-		).ColumnAs(
-			sqlx.Select("*").From("test").Limit("1"),
-			"tester",
+			sqlx.Select("*").From("test").Limit("1").As("tester"),
 		).From(
 			"test",
 		).Where(
@@ -270,9 +268,8 @@ func TestSelect(t *testing.T) {
 					t.Fatal(err)
 				}
 
-				sql := sqlx.Select().ColumnAs(
-					sqlx.Select("a", "b", "c").From("test"),
-					"results",
+				sql := sqlx.Select(
+					sqlx.Select("a", "b", "c").From("test").As("results"),
 				).SqlPretty("    ")
 
 				if sql != strings.TrimSuffix(string(expected), "\n") {
@@ -287,9 +284,10 @@ func TestSelect(t *testing.T) {
 					t.Fatal(err)
 				}
 
-				sql := sqlx.Select("1", "2").ColumnAs(
-					sqlx.Select("a", "b", "c").From("test"),
-					"results",
+				sql := sqlx.Select(
+					"1",
+					"2",
+					sqlx.Select("a", "b", "c").From("test").As("results"),
 				).SqlPretty("    ")
 
 				if sql != strings.TrimSuffix(string(expected), "\n") {
@@ -462,9 +460,7 @@ func TestSelect(t *testing.T) {
 			sql := sqlx.Select(
 				"a",
 				"b",
-			).ColumnAs(
-				sqlx.Select("*").From("test").Limit("1"),
-				"tester",
+				sqlx.Select("*").From("test").Limit("1").As("tester"),
 			).From(
 				"test",
 			).Where(

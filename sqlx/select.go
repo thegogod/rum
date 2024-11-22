@@ -16,32 +16,30 @@ type SelectStatement struct {
 	offset  Sqlizer
 }
 
-func Select(columns ...string) *SelectStatement {
+func Select(columns ...any) *SelectStatement {
 	cols := make([]Sqlizer, len(columns))
 
 	for i, col := range columns {
-		cols[i] = Raw(col)
+		cols[i] = &Sql{col}
 	}
 
-	return &SelectStatement{
+	self := &SelectStatement{
 		depth:   0,
 		columns: cols,
 	}
-}
 
-func (self *SelectStatement) Column(column string) *SelectStatement {
-	self.columns = append(self.columns, Raw(column))
+	self.setDepth(self.depth)
 	return self
 }
 
-func (self *SelectStatement) ColumnAs(column any, alias string) *SelectStatement {
+func (self *SelectStatement) Column(column any) *SelectStatement {
 	switch v := column.(type) {
 	case string:
-		self.columns = append(self.columns, As(&Sql{v}, alias))
+		self.columns = append(self.columns, &Sql{v})
 		break
-	case *SelectStatement:
-		v.depth = self.depth + 1
-		self.columns = append(self.columns, As(&Sql{v}, alias))
+	case Sqlizer:
+		v.setDepth(self.depth + 1)
+		self.columns = append(self.columns, v)
 		break
 	}
 
@@ -125,6 +123,10 @@ func (self *SelectStatement) Limit(limit string) *SelectStatement {
 func (self *SelectStatement) Offset(offset string) *SelectStatement {
 	self.offset = &Sql{offset}
 	return self
+}
+
+func (self *SelectStatement) As(alias string) Sqlizer {
+	return As(self, alias)
 }
 
 func (self SelectStatement) Sql() string {
