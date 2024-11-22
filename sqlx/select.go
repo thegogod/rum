@@ -10,6 +10,7 @@ type SelectStatement struct {
 	columns Columns
 	from    Sqlizer
 	where   *WhereClause
+	joins   []Sqlizer
 	groupBy Sqlizer
 	orderBy Sqlizer
 	limit   Sqlizer
@@ -26,6 +27,7 @@ func Select(columns ...any) *SelectStatement {
 	return &SelectStatement{
 		depth:   0,
 		columns: cols,
+		joins:   []Sqlizer{},
 	}
 }
 
@@ -36,6 +38,11 @@ func (self *SelectStatement) Column(column any) *SelectStatement {
 
 func (self *SelectStatement) From(from any) *SelectStatement {
 	self.from = &Sql{from}
+	return self
+}
+
+func (self *SelectStatement) Join(join Sqlizer) *SelectStatement {
+	self.joins = append(self.joins, join)
 	return self
 }
 
@@ -93,6 +100,10 @@ func (self SelectStatement) Sql() string {
 		parts = append(parts, "FROM", self.from.Sql())
 	}
 
+	for _, join := range self.joins {
+		parts = append(parts, join.Sql())
+	}
+
 	if self.where != nil {
 		parts = append(parts, "WHERE", self.where.Sql())
 	}
@@ -142,6 +153,11 @@ func (self SelectStatement) SqlPretty(indent string) string {
 		lines := strings.Split(self.from.SqlPretty(indent), "\n")
 		parts = append(parts, "FROM "+lines[0])
 		parts = append(parts, lines[1:]...)
+	}
+
+	for _, join := range self.joins {
+		lines := strings.Split(join.SqlPretty(indent), "\n")
+		parts = append(parts, lines...)
 	}
 
 	if self.where != nil {

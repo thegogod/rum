@@ -166,6 +166,40 @@ func TestSelect(t *testing.T) {
 		})
 	})
 
+	t.Run("join", func(t *testing.T) {
+		t.Run("left", func(t *testing.T) {
+			expected, err := os.ReadFile("./testcases/select/left_join.sql")
+
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			sql := sqlx.Select("*").From("a").Join(
+				sqlx.LeftJoin("b", "a.id = b.id").And("b.deleted_at IS NULL"),
+			).Sql()
+
+			if sql != strings.TrimSuffix(string(expected), "\n") {
+				t.Fatalf(sql)
+			}
+		})
+
+		t.Run("left outer", func(t *testing.T) {
+			expected, err := os.ReadFile("./testcases/select/left_outer_join.sql")
+
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			sql := sqlx.Select("*").From("a").Join(
+				sqlx.LeftOuterJoin("b", "a.id = b.id").And("b.deleted_at IS NULL"),
+			).Sql()
+
+			if sql != strings.TrimSuffix(string(expected), "\n") {
+				t.Fatalf(sql)
+			}
+		})
+	})
+
 	t.Run("group by", func(t *testing.T) {
 		expected, err := os.ReadFile("./testcases/select/group_by.sql")
 
@@ -391,6 +425,40 @@ func TestSelect(t *testing.T) {
 					sqlx.Where("a = b").And("b = c"),
 				).And(
 					sqlx.Where("a = b").Or("b = c"),
+				).SqlPretty("    ")
+
+				if sql != strings.TrimSuffix(string(expected), "\n") {
+					t.Fatalf(sql)
+				}
+			})
+		})
+
+		t.Run("join", func(t *testing.T) {
+			t.Run("left", func(t *testing.T) {
+				expected, err := os.ReadFile("./testcases/select/left_join_pretty.sql")
+
+				if err != nil {
+					t.Fatal(err)
+				}
+
+				sql := sqlx.Select("*").From("a").Join(
+					sqlx.LeftJoin("b", "a.id = b.id").And("b.deleted_at IS NULL"),
+				).SqlPretty("    ")
+
+				if sql != strings.TrimSuffix(string(expected), "\n") {
+					t.Fatalf(sql)
+				}
+			})
+
+			t.Run("left outer", func(t *testing.T) {
+				expected, err := os.ReadFile("./testcases/select/left_outer_join_pretty.sql")
+
+				if err != nil {
+					t.Fatal(err)
+				}
+
+				sql := sqlx.Select("*").From("a").Join(
+					sqlx.LeftOuterJoin("b", "a.id = b.id").And("b.deleted_at IS NULL"),
 				).SqlPretty("    ")
 
 				if sql != strings.TrimSuffix(string(expected), "\n") {
