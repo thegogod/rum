@@ -47,61 +47,32 @@ func (self *SelectStatement) Column(column any) *SelectStatement {
 }
 
 func (self *SelectStatement) From(from any) *SelectStatement {
-	switch v := from.(type) {
-	case string:
-		self.from = &Sql{from}
-		break
-	case *SelectStatement:
-		v.depth = self.depth + 1
-		self.from = v
-		break
-	case *AsClause:
-		switch v := v.stmt.(type) {
-		case *SelectStatement:
-			v.depth = self.depth + 1
-			break
-		}
-
-		self.from = v
-		break
-	}
-
+	self.from = &Sql{from}
+	self.setDepth(self.depth)
 	return self
 }
 
 func (self *SelectStatement) Where(predicate any) *SelectStatement {
-	switch v := predicate.(type) {
-	case Sqlizer:
-		v.setDepth(self.depth + 1)
-	}
-
 	self.where = Where(predicate)
+	self.setDepth(self.depth)
 	return self
 }
 
 func (self *SelectStatement) And(predicates ...any) *SelectStatement {
 	for _, predicate := range predicates {
-		switch v := predicate.(type) {
-		case Sqlizer:
-			v.setDepth(self.depth + 1)
-		}
-
 		self.where.And(predicate)
 	}
 
+	self.setDepth(self.depth)
 	return self
 }
 
 func (self *SelectStatement) Or(predicates ...any) *SelectStatement {
 	for _, predicate := range predicates {
-		switch v := predicate.(type) {
-		case Sqlizer:
-			v.setDepth(self.depth + 1)
-		}
-
 		self.where.Or(predicate)
 	}
 
+	self.setDepth(self.depth)
 	return self
 }
 
