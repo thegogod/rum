@@ -2,8 +2,6 @@ package gq
 
 import (
 	"encoding/json"
-
-	"github.com/thegogod/rum/gq/query"
 )
 
 type Int struct{}
@@ -13,15 +11,7 @@ func (self Int) Key() string {
 }
 
 func (self Int) Do(params *DoParams) Result {
-	parser := query.Parser([]byte(params.Query))
-	query, err := parser.Parse()
-
-	if err != nil {
-		return Result{Error: err}
-	}
-
 	return self.Resolve(&ResolveParams{
-		Query:   query,
 		Value:   params.Value,
 		Context: params.Context,
 	})
