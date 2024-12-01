@@ -149,11 +149,12 @@ func TestObject(t *testing.T) {
 					"id":   gq.Field{},
 					"name": gq.Field{},
 					"email": gq.Field{
+						Type:      gq.Pointer{gq.String{}},
 						DependsOn: []string{"name"},
 						Resolver: func(params *gq.ResolveParams) gq.Result {
 							parent := params.Parent.(User)
 							email := fmt.Sprintf("%s@gmail.com", parent.Name)
-							return gq.Result{Data: &email}
+							return gq.Result{Data: email}
 						},
 					},
 				},

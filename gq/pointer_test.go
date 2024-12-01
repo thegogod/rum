@@ -1,6 +1,7 @@
 package gq_test
 
 import (
+	"encoding/json"
 	"testing"
 	"time"
 
@@ -147,6 +148,15 @@ func TestPointer(t *testing.T) {
 
 		if user.Email != "test@test.com" {
 			t.Fatalf("expected `%s`, received `%s`", "test@test.com", user.Email)
+		}
+	})
+
+	t.Run("should json", func(t *testing.T) {
+		schema := gq.Pointer{gq.String{}}
+		b, _ := json.Marshal(schema)
+
+		if string(b) != `"Pointer[string]"` {
+			t.FailNow()
 		}
 	})
 }

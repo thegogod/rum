@@ -21,13 +21,11 @@ func (self Bool) Resolve(params *ResolveParams) Result {
 	switch value := params.Value.(type) {
 	case bool:
 		return Result{Data: value}
-	case *bool:
-		return Result{Data: value}
 	}
 
 	return Result{Error: NewError("", "must be a boolean")}
 }
 
 func (self Bool) MarshalJSON() ([]byte, error) {
-	return json.Marshal("bool")
+	return json.Marshal(self.Key())
 }

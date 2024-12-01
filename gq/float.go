@@ -21,11 +21,7 @@ func (self Float) Resolve(params *ResolveParams) Result {
 	switch value := params.Value.(type) {
 	case float32:
 		return Result{Data: value}
-	case *float32:
-		return Result{Data: value}
 	case float64:
-		return Result{Data: value}
-	case *float64:
 		return Result{Data: value}
 	}
 
@@ -33,5 +29,5 @@ func (self Float) Resolve(params *ResolveParams) Result {
 }
 
 func (self Float) MarshalJSON() ([]byte, error) {
-	return json.Marshal("float")
+	return json.Marshal(self.Key())
 }

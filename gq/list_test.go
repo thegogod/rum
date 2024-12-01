@@ -1,6 +1,7 @@
 package gq_test
 
 import (
+	"encoding/json"
 	"testing"
 
 	"github.com/thegogod/rum/gq"
@@ -117,6 +118,15 @@ func TestList(t *testing.T) {
 
 		if *value[0].Email != "dev@gmail.com" {
 			t.Fatalf("expected `%s`, received `%s`", "dev@gmail.com", *value[0].Email)
+		}
+	})
+
+	t.Run("should json", func(t *testing.T) {
+		schema := gq.List{Type: gq.String{}}
+		b, _ := json.Marshal(schema)
+
+		if string(b) != `"List[string]"` {
+			t.FailNow()
 		}
 	})
 }

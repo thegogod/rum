@@ -2,6 +2,7 @@ package gq
 
 import (
 	"encoding/json"
+	"reflect"
 )
 
 type Int struct{}
@@ -18,16 +19,15 @@ func (self Int) Do(params *DoParams) Result {
 }
 
 func (self Int) Resolve(params *ResolveParams) Result {
-	switch value := params.Value.(type) {
-	case int:
-		return Result{Data: value}
-	case *int:
-		return Result{Data: value}
+	value := reflect.ValueOf(params.Value)
+
+	if value.IsValid() && value.CanInt() {
+		return Result{Data: value.Interface()}
 	}
 
 	return Result{Error: NewError("", "must be an integer")}
 }
 
 func (self Int) MarshalJSON() ([]byte, error) {
-	return json.Marshal("int")
+	return json.Marshal(self.Key())
 }
