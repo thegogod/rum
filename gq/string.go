@@ -23,7 +23,7 @@ func (self String) Resolve(params *ResolveParams) Result {
 		return Result{Data: value}
 	}
 
-	return Result{Error: NewError("", "must be a string")}
+	return Result{Error: NewError(params.Key, "must be a string")}
 }
 
 func (self String) MarshalJSON() ([]byte, error) {

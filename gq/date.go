@@ -24,7 +24,7 @@ func (self Date) Resolve(params *ResolveParams) Result {
 		return Result{Data: value}
 	}
 
-	return Result{Error: NewError("", "must be a Date")}
+	return Result{Error: NewError(params.Key, "must be a Date")}
 }
 
 func (self Date) MarshalJSON() ([]byte, error) {

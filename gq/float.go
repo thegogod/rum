@@ -25,7 +25,7 @@ func (self Float) Resolve(params *ResolveParams) Result {
 		return Result{Data: value}
 	}
 
-	return Result{Error: NewError("", "must be a float")}
+	return Result{Error: NewError(params.Key, "must be a float")}
 }
 
 func (self Float) MarshalJSON() ([]byte, error) {

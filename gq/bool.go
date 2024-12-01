@@ -23,7 +23,7 @@ func (self Bool) Resolve(params *ResolveParams) Result {
 		return Result{Data: value}
 	}
 
-	return Result{Error: NewError("", "must be a boolean")}
+	return Result{Error: NewError(params.Key, "must be a boolean")}
 }
 
 func (self Bool) MarshalJSON() ([]byte, error) {

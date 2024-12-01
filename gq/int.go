@@ -25,7 +25,7 @@ func (self Int) Resolve(params *ResolveParams) Result {
 		return Result{Data: value.Interface()}
 	}
 
-	return Result{Error: NewError("", "must be an integer")}
+	return Result{Error: NewError(params.Key, "must be an integer")}
 }
 
 func (self Int) MarshalJSON() ([]byte, error) {
