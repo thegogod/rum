@@ -15,6 +15,13 @@ func (self Pointer) Key() string {
 }
 
 func (self Pointer) Do(params *DoParams) Result {
+	value := reflect.ValueOf(params.Value)
+
+	if value.Kind() == reflect.Pointer {
+		value = value.Elem()
+		params.Value = value.Interface()
+	}
+
 	res := self.Type.Do(params)
 	data := reflect.ValueOf(res.Data)
 
@@ -28,6 +35,13 @@ func (self Pointer) Do(params *DoParams) Result {
 }
 
 func (self Pointer) Resolve(params *ResolveParams) Result {
+	value := reflect.ValueOf(params.Value)
+
+	if value.Kind() == reflect.Pointer {
+		value = value.Elem()
+		params.Value = value.Interface()
+	}
+
 	res := self.Type.Resolve(params)
 	data := reflect.ValueOf(res.Data)
 

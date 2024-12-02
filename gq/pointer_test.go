@@ -30,10 +30,54 @@ func TestPointer(t *testing.T) {
 		}
 	})
 
+	t.Run("should resolve *string as pointer", func(t *testing.T) {
+		schema := gq.Pointer{gq.String{}}
+		value := "testing"
+		res := schema.Do(&gq.DoParams{
+			Value: &value,
+		})
+
+		if res.Error != nil {
+			t.Fatal(res.Error)
+		}
+
+		v, ok := res.Data.(*string)
+
+		if !ok {
+			t.Fatal(res.Data)
+		}
+
+		if *v != "testing" {
+			t.Fatalf("expected `%s`, received `%s`", "testing", *v)
+		}
+	})
+
 	t.Run("should resolve bool as pointer", func(t *testing.T) {
 		schema := gq.Pointer{gq.Bool{}}
 		res := schema.Do(&gq.DoParams{
 			Value: true,
+		})
+
+		if res.Error != nil {
+			t.Fatal(res.Error)
+		}
+
+		v, ok := res.Data.(*bool)
+
+		if !ok {
+			t.Fatal(res.Data)
+		}
+
+		if *v != true {
+			t.Fatalf("expected `%v`, received `%v`", true, *v)
+		}
+	})
+
+	t.Run("should resolve *bool as pointer", func(t *testing.T) {
+		schema := gq.Pointer{gq.Bool{}}
+		value := true
+		res := schema.Do(&gq.DoParams{
+			Value: &value,
 		})
 
 		if res.Error != nil {
@@ -72,6 +116,28 @@ func TestPointer(t *testing.T) {
 		}
 	})
 
+	t.Run("should resolve *int as pointer", func(t *testing.T) {
+		schema := gq.Pointer{gq.Int{}}
+		value := 102
+		res := schema.Do(&gq.DoParams{
+			Value: &value,
+		})
+
+		if res.Error != nil {
+			t.Fatal(res.Error)
+		}
+
+		v, ok := res.Data.(*int)
+
+		if !ok {
+			t.Fatal(res.Data)
+		}
+
+		if *v != 102 {
+			t.Fatalf("expected `%v`, received `%v`", 102, *v)
+		}
+	})
+
 	t.Run("should resolve float as pointer", func(t *testing.T) {
 		schema := gq.Pointer{gq.Float{}}
 		res := schema.Do(&gq.DoParams{
@@ -93,10 +159,50 @@ func TestPointer(t *testing.T) {
 		}
 	})
 
+	t.Run("should resolve *float as pointer", func(t *testing.T) {
+		schema := gq.Pointer{gq.Float{}}
+		value := 11.123
+		res := schema.Do(&gq.DoParams{
+			Value: &value,
+		})
+
+		if res.Error != nil {
+			t.Fatal(res.Error)
+		}
+
+		v, ok := res.Data.(*float64)
+
+		if !ok {
+			t.Fatal(res.Data)
+		}
+
+		if *v != 11.123 {
+			t.Fatalf("expected `%v`, received `%v`", 11.123, *v)
+		}
+	})
+
 	t.Run("should resolve `time.Time` as pointer", func(t *testing.T) {
 		schema := gq.Pointer{gq.Date{}}
 		res := schema.Do(&gq.DoParams{
 			Value: time.Now(),
+		})
+
+		if res.Error != nil {
+			t.Fatal(res.Error)
+		}
+
+		_, ok := res.Data.(*time.Time)
+
+		if !ok {
+			t.Fatal(res.Data)
+		}
+	})
+
+	t.Run("should resolve `*time.Time` as pointer", func(t *testing.T) {
+		schema := gq.Pointer{gq.Date{}}
+		value := time.Now()
+		res := schema.Do(&gq.DoParams{
+			Value: &value,
 		})
 
 		if res.Error != nil {
