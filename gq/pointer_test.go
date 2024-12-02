@@ -299,6 +299,47 @@ func TestPointer(t *testing.T) {
 		}
 	})
 
+	t.Run("should resolve nil struct field as pointer", func(t *testing.T) {
+		type User struct {
+			Name  string  `json:"name"`
+			Email *string `json:"email"`
+		}
+
+		schema := gq.Object[User]{
+			Name: "User",
+			Fields: gq.Fields{
+				"name":  gq.Field{Type: gq.String{}},
+				"email": gq.Field{Type: gq.Pointer{Type: gq.String{}}},
+			},
+		}
+
+		res := schema.Do(&gq.DoParams{
+			Query: "{name,email}",
+			Value: User{
+				Name:  "test",
+				Email: nil,
+			},
+		})
+
+		if res.Error != nil {
+			t.Fatal(res.Error)
+		}
+
+		user, ok := res.Data.(User)
+
+		if !ok {
+			t.Fatal(res.Data)
+		}
+
+		if user.Name != "test" {
+			t.Fatalf("expected `%s`, received `%s`", "test", user.Name)
+		}
+
+		if user.Email != nil {
+			t.Fatalf("expected `nil`, received `%s`", *user.Email)
+		}
+	})
+
 	t.Run("should json", func(t *testing.T) {
 		schema := gq.Pointer{gq.String{}}
 		b, _ := json.Marshal(schema)
