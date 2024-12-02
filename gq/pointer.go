@@ -17,9 +17,13 @@ func (self Pointer) Key() string {
 func (self Pointer) Do(params *DoParams) Result {
 	value := reflect.ValueOf(params.Value)
 
-	if value.IsValid() && value.Kind() == reflect.Pointer {
+	if value.Kind() == reflect.Pointer {
 		value = value.Elem()
-		params.Value = value.Interface()
+		params.Value = nil
+
+		if value.IsValid() {
+			params.Value = value.Interface()
+		}
 	}
 
 	res := self.Type.Do(params)
@@ -37,9 +41,13 @@ func (self Pointer) Do(params *DoParams) Result {
 func (self Pointer) Resolve(params *ResolveParams) Result {
 	value := reflect.ValueOf(params.Value)
 
-	if value.IsValid() && value.Kind() == reflect.Pointer {
+	if value.Kind() == reflect.Pointer {
 		value = value.Elem()
-		params.Value = value.Interface()
+		params.Value = nil
+
+		if value.IsValid() {
+			params.Value = value.Interface()
+		}
 	}
 
 	res := self.Type.Resolve(params)
